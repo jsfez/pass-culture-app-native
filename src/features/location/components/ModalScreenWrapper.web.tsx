@@ -73,7 +73,7 @@ const Root = styled.View(({ theme }) => ({
 }))
 
 const Backdrop = styled(AnimatedPressable)({
-  ...StyleSheet.absoluteFillObject,
+  ...StyleSheet.absoluteFill,
   backgroundColor: OVERLAY_COLOR,
 })
 
