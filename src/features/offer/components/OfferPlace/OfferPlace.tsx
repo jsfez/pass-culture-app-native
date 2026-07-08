@@ -4,11 +4,15 @@ import React, { FC, ReactNode } from 'react'
 import { useTheme } from 'styled-components/native'
 
 import { Activity, OfferResponse, SubcategoryIdEnum, VenueResponse } from 'api/gen'
+import { useAuthContext } from 'features/auth/context/AuthContext'
 import { UseNavigationType } from 'features/navigation/navigators/RootNavigator/types'
 import { OfferCineBlock } from 'features/offer/components/OfferCine/OfferCineBlock'
+import { OfferCineBlockV2 } from 'features/offer/components/OfferCine/OfferCineBlockV2'
 import { OfferVenueContainer } from 'features/offer/components/OfferVenueContainer/OfferVenueContainer'
 import { getVenueSectionTitle } from 'features/offer/helpers/getVenueSectionTitle/getVenueSectionTitle'
 import { analytics } from 'libs/analytics/provider'
+import { useFeatureFlag } from 'libs/firebase/firestore/featureFlags/useFeatureFlag'
+import { RemoteStoreFeatureFlags } from 'libs/firebase/firestore/types'
 import { QueryKeys } from 'libs/queryKeys'
 import { Subcategory } from 'libs/subcategories/types'
 import { SectionWithDivider } from 'ui/components/SectionWithDivider'
@@ -52,7 +56,11 @@ export const OfferPlace: FC<OfferPlaceProps> = ({
   proAdvicesOnVenueSegment,
 }) => {
   const { navigate } = useNavigation<UseNavigationType>()
+  const { user } = useAuthContext()
   const queryClient = useQueryClient()
+  const wipUseMovieScreeningEndpoint = useFeatureFlag(
+    RemoteStoreFeatureFlags.WIP_USE_MOVIE_SCREENINGS_ENDPOINT
+  )
 
   const venueSectionTitle = getVenueSectionTitle(offer.subcategoryId, subcategory.isEvent)
 
@@ -75,11 +83,19 @@ export const OfferPlace: FC<OfferPlaceProps> = ({
   return (
     <OfferPlaceWrapper isDigital={offer.isDigital}>
       {isOfferAMovieScreening ? (
-        <OfferCineBlock
-          title={venueSectionTitle}
-          offer={offer}
-          onSeeVenuePress={handleOnSeeVenuePress}
-        />
+        wipUseMovieScreeningEndpoint && !user ? (
+          <OfferCineBlockV2
+            title={venueSectionTitle}
+            offer={offer}
+            onSeeVenuePress={handleOnSeeVenuePress}
+          />
+        ) : (
+          <OfferCineBlock
+            title={venueSectionTitle}
+            offer={offer}
+            onSeeVenuePress={handleOnSeeVenuePress}
+          />
+        )
       ) : (
         <OfferVenueContainer
           offer={offer}

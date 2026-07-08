@@ -2,43 +2,51 @@ import React, { FC, useEffect, useState } from 'react'
 import { View } from 'react-native'
 import styled from 'styled-components/native'
 
-import { OfferResponse } from 'api/gen'
+import { DayVenueScreenings } from 'api/gen'
 import { ExpandingFlatList } from 'features/offer/components/ExpandingFlatlist/ExpandingFlatList'
 import {
   useDisableCalendarDates,
   useDisplayCalendar,
   useMovieCalendar,
 } from 'features/offer/components/MoviesScreeningCalendar/MovieCalendarContext'
-import { CineBlock } from 'features/offer/components/OfferCine/CineBlock'
 import { CineBlockSkeleton } from 'features/offer/components/OfferCine/CineBlockSkeleton'
-import {
-  INITIAL_LIST_SIZE,
-  expandList,
-  getListToDisplay,
-  hasReachedEnd,
-} from 'features/offer/helpers/expandableList'
-import {
-  getDaysWithNoScreenings,
-  useGetVenuesByDay,
-} from 'features/offer/helpers/useGetVenueByDay/useGetVenuesByDay'
-import { useOffersStocksFromOfferQuery } from 'features/offer/queries/useOffersStocksFromOfferQuery'
+import { CineBlockV2 } from 'features/offer/components/OfferCine/CineBlockV2'
+import { INITIAL_LIST_SIZE, expandList, hasReachedEnd } from 'features/offer/helpers/expandableList'
+import { formatDateToISOStringWithoutTime } from 'libs/parsers/formatDates'
 import { Button } from 'ui/designSystem/Button/Button'
 import { PlainMore } from 'ui/svg/icons/PlainMore'
 import { Typo } from 'ui/theme'
 
 type Props = {
-  offer: OfferResponse
+  offerId: number
+  calendar: DayVenueScreenings[]
+  isLoading: boolean
   onSeeVenuePress?: VoidFunction
 }
 
-export const OfferCineContent: FC<Props> = ({ offer, onSeeVenuePress }) => {
-  const { data: offers, isLoading } = useOffersStocksFromOfferQuery(offer)
-  const { selectedDate, dates } = useMovieCalendar()
-  const { movieOffers, hasStocksOnlyAfter15Days } = useGetVenuesByDay(selectedDate, offers.offers)
+export const OfferCineContentV2: FC<Props> = ({
+  offerId,
+  calendar,
+  isLoading,
+  onSeeVenuePress,
+}) => {
+  const { selectedDate } = useMovieCalendar()
+  const venues =
+    calendar?.find((value) => value.date === formatDateToISOStringWithoutTime(selectedDate))
+      ?.screenings || []
+  const disabledDates = calendar
+    .filter((dayVenueScreenings) =>
+      dayVenueScreenings.screenings.every((screenings) => screenings.dayScreenings.length === 0)
+    )
+    .map((dayVenuScreenings) => new Date(dayVenuScreenings.date))
 
   const [displayedLen, setDisplayedLen] = useState(INITIAL_LIST_SIZE)
-
-  const disabledDates = getDaysWithNoScreenings(offers.offers, dates)
+  const hasStocksOnlyAfter15Days =
+    calendar
+      .map((dayVenueScreenings) => dayVenueScreenings.screenings)
+      .findIndex((screenings) =>
+        screenings.some((venueScreenings) => venueScreenings.dayScreenings.length > 0)
+      ) > 0
 
   useDisplayCalendar(!hasStocksOnlyAfter15Days)
   useDisableCalendarDates(disabledDates)
@@ -50,27 +58,27 @@ export const OfferCineContent: FC<Props> = ({ offer, onSeeVenuePress }) => {
   return (
     <View>
       <ExpandingFlatList
-        data={getListToDisplay(movieOffers, displayedLen)}
+        data={venues.slice(0, displayedLen)}
         isLoading={isLoading}
         skeletonListLength={3}
         renderSkeleton={() => <CineBlockSkeleton />}
-        keyExtractor={(item) => item?.offer?.id.toString()}
         renderItem={({ item }) => (
-          <CineBlock
-            offer={item.offer}
+          <CineBlockV2
+            offerId={offerId}
+            venueScreenings={item}
             onSeeVenuePress={onSeeVenuePress}
-            nextDate={item.nextDate}
             withDivider
           />
         )}
+        keyExtractor={(_, index) => `venue-cine-offers-${index}`}
       />
-      {hasReachedEnd(movieOffers, displayedLen) ? null : (
+      {hasReachedEnd(venues, displayedLen) ? null : (
         <SeeMoreContainer>
           <Text>Aucune séance ne te correspond&nbsp;?</Text>
           <Button
             icon={PlainMore}
             wording="Afficher plus de cinémas"
-            onPress={() => setDisplayedLen(expandList(movieOffers, displayedLen))}
+            onPress={() => setDisplayedLen(expandList(venues, displayedLen))}
             variant="secondary"
             color="neutral"
             fullWidth
