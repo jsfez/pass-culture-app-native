@@ -4087,6 +4087,11 @@ export interface SettingsResponse {
    * @type {boolean}
    * @memberof SettingsResponse
    */
+  imageResizingUrl: boolean
+  /**
+   * @type {boolean}
+   * @memberof SettingsResponse
+   */
   isRecaptchaEnabled: boolean
   /**
    * @type {string}
