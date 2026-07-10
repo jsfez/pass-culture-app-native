@@ -98,8 +98,8 @@ const bonificationCheatcodeCategory: CheatcodeCategory = {
     },
     {
       id: uuidv4(),
-      title: 'BonificationIncorrectLink',
-      navigationTarget: getSubscriptionPropConfig('BonificationIncorrectLink'),
+      title: 'IncorrectLinkPage',
+      navigationTarget: getSubscriptionPropConfig('IncorrectLinkPage'),
     },
     {
       id: uuidv4(),

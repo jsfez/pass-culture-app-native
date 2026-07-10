@@ -46,7 +46,7 @@ describe('<UbbleWebview/>', () => {
         await act(async () => {
           expect(navigate).toHaveBeenCalledWith('SubscriptionStackNavigator', {
             params: undefined,
-            screen: 'BonificationIncorrectLink',
+            screen: 'IncorrectLinkPage',
           })
         })
       })

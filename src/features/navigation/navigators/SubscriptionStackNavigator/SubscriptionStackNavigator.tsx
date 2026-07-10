@@ -7,11 +7,11 @@ import { BonificationDisabilityRefused } from 'features/bonification/pages/Bonif
 import { BonificationError } from 'features/bonification/pages/BonificationError'
 import { BonificationExplanations } from 'features/bonification/pages/BonificationExplanations'
 import { BonificationFamilyQuotientRefused } from 'features/bonification/pages/BonificationFamilyQuotientRefused'
-import { BonificationIncorrectLink } from 'features/bonification/pages/BonificationIncorrectLink'
 import { BonificationNames } from 'features/bonification/pages/BonificationNames'
 import { BonificationRecap } from 'features/bonification/pages/BonificationRecap'
 import { BonificationRequiredInformation } from 'features/bonification/pages/BonificationRequiredInformation'
 import { BonificationTitle } from 'features/bonification/pages/BonificationTitle'
+import { IncorrectLinkPage } from 'features/bonification/pages/IncorrectLinkPage'
 import { CulturalSurveyIntro } from 'features/culturalSurvey/pages/CulturalSurveyIntro'
 import { CulturalSurveyQuestions } from 'features/culturalSurvey/pages/CulturalSurveyQuestions'
 import { CulturalSurveyThanks } from 'features/culturalSurvey/pages/CulturalSurveyThanks'
@@ -213,6 +213,13 @@ const subscriptionStackNavigatorDefinition = {
         path: 'confirmation',
       },
     },
+    IncorrectLinkPage: {
+      screen: IncorrectLinkPage,
+      if: useIsSignedIn,
+      linking: {
+        path: 'bonification/lien-incorrect',
+      },
+    },
     BeneficiaryRequestSent: {
       screen: BeneficiaryRequestSent,
       if: useIsSignedIn,
@@ -337,13 +344,6 @@ const subscriptionStackNavigatorDefinition = {
       if: useIsSignedIn,
       linking: {
         path: 'bonification/erreur',
-      },
-    },
-    BonificationIncorrectLink: {
-      screen: BonificationIncorrectLink,
-      if: useIsSignedIn,
-      linking: {
-        path: 'bonification/lien-incorrect',
       },
     },
     BonificationFamilyQuotientRefused: {

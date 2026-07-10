@@ -33,7 +33,7 @@ export const UbbleWebview: React.FC = () => {
   const identificationUrl = params?.identificationUrl
   const isValidUrl = isValidUbbleUrl(identificationUrl)
 
-  if (!isValidUrl) navigate(...getSubscriptionHookConfig('BonificationIncorrectLink'))
+  if (!isValidUrl) navigate(...getSubscriptionHookConfig('IncorrectLinkPage'))
 
   useEffect(() => {
     if (isValidUrl) {
