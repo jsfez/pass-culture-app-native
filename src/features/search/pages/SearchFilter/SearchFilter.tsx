@@ -128,7 +128,7 @@ export const SearchFilter: React.FC = () => {
             </SectionWrapper>
           ) : null}
           <SectionWrapper>
-            <Section.Venue />
+            <Section.Venue onClose={onClose} />
           </SectionWrapper>
           <SectionWrapper>
             <Section.Price
