@@ -194,6 +194,7 @@
     "zustand": "^4.5.7"
   },
   "devDependencies": {
+    "@argos-ci/playwright": "^7.3.0",
     "@babel/core": "^7.29.7",
     "@babel/eslint-parser": "^7.29.7",
     "@babel/plugin-proposal-export-default-from": "^7.29.7",
@@ -211,6 +212,7 @@
     "@hot-updater/bare": "^0.20.11",
     "@hot-updater/firebase": "^0.20.11",
     "@hot-updater/sentry-plugin": "^0.20.11",
+    "@playwright/test": "^1.61.1",
     "@react-native-community/cli": "19.1.2",
     "@react-native-community/cli-platform-android": "19.1.2",
     "@react-native-community/cli-platform-ios": "19.1.2",
@@ -288,6 +290,7 @@
     "firebase-admin": "^13.4.0",
     "firebase-tools": "^15.21.0",
     "hot-updater": "^0.20.11",
+    "http-server": "^14.1.1",
     "husky": "^9.1.7",
     "jest": "^30.0.5",
     "jest-axe": "^9.0.0",

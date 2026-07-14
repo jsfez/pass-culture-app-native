@@ -146,3 +146,6 @@ proxy_cacert
 
 # claude
 CLAUDE.md
+
+# Argos demo
+storybook-static/

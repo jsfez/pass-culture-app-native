@@ -1,0 +1,49 @@
+name: argos
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  argos:
+    runs-on: ubuntu-24.04
+    name: Visual testing
+    timeout-minutes: 30
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - name: Enable Corepack
+        run: corepack enable
+
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup node
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: '.nvmrc'
+
+      - name: Install dependencies
+        run: yarn install --mode=skip-build
+
+      - name: Build Storybook
+        run: yarn build-storybook --output-dir storybook-static
+        env:
+          NODE_ENV: production
+          TZ: UTC
+
+      - name: Install Playwright browser
+        run: yarn playwright install --with-deps chromium
+
+      - name: Capture screenshots with Argos
+        run: yarn playwright test --config=argos/playwright.config.ts
+        env:
+          TZ: UTC
