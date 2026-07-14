@@ -29,22 +29,31 @@ for (const story of stories) {
       ).__STORYBOOK_PREVIEW__?.currentRender?.phase
       return phase === 'completed' || phase === 'finished'
     })
-    // Respect the repo's own `chromatic: { disableSnapshot: true }` story
-    // parameters so Argos snapshots exactly what Chromatic snapshots.
-    const disableSnapshot = await page.evaluate(
+    // Reuse the repo's own `chromatic` story parameters, so Argos snapshots
+    // exactly what Chromatic snapshots — no second set of knobs to maintain.
+    const chromatic = await page.evaluate(
       () =>
         (
           window as unknown as {
             __STORYBOOK_PREVIEW__?: {
               currentRender?: {
-                story?: { parameters?: { chromatic?: { disableSnapshot?: boolean } } }
+                story?: {
+                  parameters?: {
+                    chromatic?: { disableSnapshot?: boolean; delay?: number }
+                  }
+                }
               }
             }
           }
-        ).__STORYBOOK_PREVIEW__?.currentRender?.story?.parameters?.chromatic?.disableSnapshot ===
-        true
+        ).__STORYBOOK_PREVIEW__?.currentRender?.story?.parameters?.chromatic ?? {}
     )
-    test.skip(disableSnapshot, 'story opts out of snapshots (chromatic parameter)')
+    test.skip(chromatic.disableSnapshot === true, 'story opts out of snapshots (chromatic parameter)')
+    // `delay` is how the repo already declares "this story animates, wait for it"
+    // (e.g. ProgressBar transitions its width over 800ms from JS, which neither
+    // `reducedMotion` nor CSS-animation freezing can pin down).
+    if (chromatic.delay) {
+      await page.waitForTimeout(chromatic.delay)
+    }
     // Carousels/scrolling lists may settle on a non-deterministic offset:
     // pin every scroll position before capturing.
     await page.evaluate(() => {
